@@ -1,20 +1,25 @@
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class CloseTickets implements Filter {
-    Agents agent;
-    @Override
-    public List<Tickets> getTicketsByAgent(Agents agent) {
-        this.agent=agent;
-        return filtering();
-    }
-@Override
-    public List<Tickets> filtering() {
+public class CloseTickets implements FilterType{
+//    FilterType filterType;
 
+
+    @Override
+    public List<Tickets> getTicketsByFilter(FilterType filterType) {
+        return Filtering.filtering(filterType,getTickets());
+    }
+
+    @Override
+    public List<Tickets> getTicketsByFilter() {
+        return getTickets();
+    }
+
+
+    private static List<Tickets> getTickets() {
         return Tickets.getAllTickets()
                 .stream()
-                .filter(ticket -> ticket.getAgent().equals(agent))
-                .filter(ticket -> !ticket.isOpened())
+                .filter(ticket -> ticket.getStatus().equals(Tickets.TicketStatus.CLOSED))
                 .collect(Collectors.toList());
     }
 }

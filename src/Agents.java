@@ -1,22 +1,20 @@
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
-public class Agents implements FilterType{
+public class Agents implements FilterType {
     private String name;
     private String role;
 
 
     public Agents(String name, String role) {
-        this.setName(name);
-        this.setRole(role);
+        setName(name);
+        setRole(role);
     }
 
     @Override
     public String toString() {
-        return "Agents{" +
-                "name='" + name + '\'' +
-                ", role='" + role + '\'' +
-                '}';
+        return "Agents{" + "name='" + name + '\'' + ", role='" + role + '\'' + '}';
     }
 
     public String getName() {
@@ -24,8 +22,7 @@ public class Agents implements FilterType{
     }
 
     public void setName(String name) {
-        if (name == null || name.isEmpty())
-            throw new IllegalArgumentException();
+        if (name == null || name.isEmpty()) throw new IllegalArgumentException();
         this.name = name;
     }
 
@@ -34,24 +31,15 @@ public class Agents implements FilterType{
     }
 
     public void setRole(String role) {
-        if (role == null || role.isEmpty())
-            throw new IllegalArgumentException("Agent role is not given");
+        if (role == null || role.isEmpty()) throw new IllegalArgumentException("Agent role is not given");
         this.role = role;
     }
-    @Override
-    public List<Tickets> getTicketsByFilter(FilterType filterType) {
-        return Filtering.filtering(filterType,getTickets());
-    }
 
     @Override
-    public List<Tickets> getTicketsByFilter() {
-        return getTickets();
-    }
-
-    private List<Tickets> getTickets() {
-        return Tickets.getAllTickets()
-                .stream()
-                .filter(ticket -> ticket.getAgent().equals(this))
-                .collect(Collectors.toList());
+    public List<Tickets> getTicketsByFilters(FilterType... filterType) {
+        if (Arrays.asList(filterType).contains(null)) throw new IllegalArgumentException();
+        List<FilterType> list = new ArrayList<>(Arrays.asList(filterType));
+        list.add(this);
+        return Filtering.filtering(list);
     }
 }

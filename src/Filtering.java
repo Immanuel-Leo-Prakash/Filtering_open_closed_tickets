@@ -1,45 +1,55 @@
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class Filtering {
-//    private static FilterType filterType;
 
-    public static List<Tickets> filtering(FilterType filterType, List<Tickets> ticketsList){
+    // using private method to apply filters
 
-        if(filterType instanceof Agents)
+    public static List<Tickets> filtering(List<FilterType> filterlist) {
+        int i = 0;
+        List<Tickets> list = new ArrayList<>(Tickets.getAllTickets());
+
+        while (i < filterlist.size())
+            list = filtering(filterlist.get(i++), list);
+        return list;
+    }
+
+    // private method to apply filter on requirements;
+
+    private static List<Tickets> filtering(FilterType filterType, List<Tickets> ticketsList) {
+
+        if (filterType instanceof Agents)
             return ticketsList
                     .stream()
                     .filter(ticket -> ticket.getAgent().equals(filterType))
                     .collect(Collectors.toList());
-        if(filterType instanceof OpenTickets)
+        if (filterType instanceof OpenTicketsFilter)
             return ticketsList
                     .stream()
-                    .filter(ticket->ticket.getStatus().equals(Tickets.TicketStatus.OPEN))
+                    .filter(ticket -> ticket.getStatus().equals(Tickets.TicketStatus.OPEN))
                     .collect(Collectors.toList());
-        if(filterType instanceof CloseTickets)
+        if (filterType instanceof CloseTicketsFilter)
             return ticketsList
                     .stream()
-                    .filter(ticket->ticket.getStatus().equals(Tickets.TicketStatus.CLOSED))
+                    .filter(ticket -> ticket.getStatus().equals(Tickets.TicketStatus.CLOSED))
                     .collect(Collectors.toList());
-        if(filterType instanceof EscalatedTickets)
+        if (filterType instanceof EscalatedTicketsFilter)
             return ticketsList
                     .stream()
-                    .filter(ticket->ticket.getStatus().equals(Tickets.TicketStatus.ESCALATED))
+                    .filter(ticket -> ticket.getStatus().equals(Tickets.TicketStatus.ESCALATED))
                     .collect(Collectors.toList());
-        if(filterType instanceof OnHoldTickets)
+        if (filterType instanceof OnHoldTicketsFilter)
             return ticketsList
                     .stream()
-                    .filter(ticket->ticket.getStatus().equals(Tickets.TicketStatus.ON_HOLD))
+                    .filter(ticket -> ticket.getStatus().equals(Tickets.TicketStatus.ON_HOLD))
                     .collect(Collectors.toList());
-        if(filterType instanceof Departments)
+        if (filterType instanceof Departments)
             return ticketsList
                     .stream()
-                    .filter(ticket->ticket.getDepartments().equals(filterType))
+                    .filter(ticket -> ticket.getDepartments().equals(filterType))
                     .collect(Collectors.toList());
-
-        return null;
-        }
-
-
+        return new ArrayList<>();
     }
 
+}

@@ -1,17 +1,14 @@
-import sun.management.resources.agent;
-
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class Departments implements FilterType {
     private String name;
-    private List<Agents> associated_agent;
-
+    private final List<Agents> associated_agent = new ArrayList<>();
 
     public Departments(String name, Agents... associated_agent) {
-        this.setName(name);
-        this.setAssociated_agent(associated_agent);
+        setName(name);
+        setAssociated_agent(associated_agent);
     }
 
     @Override
@@ -19,11 +16,14 @@ public class Departments implements FilterType {
         return name;
     }
 
+
     public String getName() {
         return name;
     }
 
     public void setName(String name) {
+        if (name == null)
+            throw new IllegalArgumentException();
         this.name = name;
     }
 
@@ -32,28 +32,24 @@ public class Departments implements FilterType {
     }
 
     public void setAssociated_agent(Agents... associated_agent) {
-        this.associated_agent = new ArrayList<>();
-        if (associated_agent.length == 0)
+
+        if (associated_agent.length == 0) {
             throw new IllegalArgumentException();
+        }
         for (Agents agent : associated_agent) {
+            if (agent == null)
+                throw new IllegalArgumentException();
             this.associated_agent.add(agent);
         }
     }
 
     @Override
-    public List<Tickets> getTicketsByFilter(FilterType filterType) {
-        return Filtering.filtering(filterType, getTicketsByFilter());
+    public List<Tickets> getTicketsByFilters(FilterType... filterType) {
+        if (Arrays.asList(filterType).contains(null))
+            throw new IllegalArgumentException();
+        List<FilterType> list = new ArrayList<>(Arrays.asList(filterType));
+        list.add(this);
+        return Filtering.filtering(list);
     }
 
-    @Override
-    public List<Tickets> getTicketsByFilter() {
-        return getTickets();
-    }
-
-    private List<Tickets> getTickets() {
-        return Tickets.getAllTickets()
-                .stream()
-                .filter(ticket -> ticket.getDepartments().equals(this))
-                .collect(Collectors.toList());
-    }
 }
